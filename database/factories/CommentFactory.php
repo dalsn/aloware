@@ -10,6 +10,6 @@ $factory->define(Comment::class, function (Faker $faker) {
     return [
         'parent_id' => NULL,
         'name' => $faker->name,
-        'body' => Str::random(160)
+        'body' => $faker->realText
     ];
 });
