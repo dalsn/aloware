@@ -19,6 +19,7 @@ class Comment extends JsonResource
             'name'          => $this->name,
             'body'          => $this->body,
             'created_at'    => $this->created_at,
+            'comments'      => Comment::collection($this->whenLoaded('comments'))
         ];
     }
 }
