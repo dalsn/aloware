@@ -4,13 +4,11 @@
 
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
-use App\Comment;
+use App\Models\Comment;
 
 $factory->define(Comment::class, function (Faker $faker) {
     return [
-        // 'parent_id' => function() {
-        //     return factory('App/Comment')->create()->id;
-        // },
+        'parent_id' => NULL,
         'name' => $faker->name,
         'body' => Str::random(160)
     ];
