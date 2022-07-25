@@ -13,12 +13,25 @@ class CommentTest extends TestCase
 
     public function testCanRetrieveComments()
     {
-        $comment = factory(Comment::class, 5)->create();
+        factory(Comment::class, 5)->create();
 
         $response = $this->json('GET', route('comments.index'));
 
         $response->assertStatus(200);
-        $this->assertEquals(5, count($response->json()));
+
+        $data = $response->json()['data'];
+        $this->assertEquals(5, count($data));
+    }
+
+    public function testCanCreateAComment()
+    {
+        $comment = factory(Comment::class)->make();
+
+        $response = $this->json('POST', route('comments.store'), $comment->toArray());
+        $response->assertStatus(201);
+
+        $comments = Comment::all();
+        $this->assertCount(1, $comments);
     }
 
     public function testCanRetrieveAComment()
@@ -28,26 +41,18 @@ class CommentTest extends TestCase
         $response = $this->json('GET', route('comments.show', $comment->id));
 
         $response->assertStatus(200);
+
+        $data = $response->json()['data'];
+        
         $this->assertEquals(1, count($response->json()));
-        $this->assertEquals($comment->name, $response->json()[0]['name']);
-        $this->assertEquals($comment->body, $response->json()[0]['body']);
-    }
-
-    public function testCanCreateAComment()
-    {
-        $comment = factory(Comment::class)->make();
-
-        $response = $this->json('POST', route('comments.store'), $comment->toArray());
-        $response->assertStatus(200);
-
-        $comments = Comment::all();
-        $this->assertCount(1, $comments);
+        $this->assertEquals($comment->name, $data['name']);
+        $this->assertEquals($comment->body, $data['body']);
     }
 
     public function testCanRespondToAComment()
     {
         $this->withoutExceptionHandling();
-        
+
         $parentComment = factory(Comment::class)->create();
         $comment = factory(Comment::class)->make([
             'parent_id' => $parentComment->id,
@@ -55,7 +60,7 @@ class CommentTest extends TestCase
 
         $response = $this->json('POST', route('comments.store'), $comment->toArray());
 
-        $response->assertStatus(200);
+        $response->assertStatus(201);
         $this->assertCount(1, $parentComment->comments->toArray());
         $this->assertEquals($parentComment->comments()->first()->body, $comment->body);
     }
