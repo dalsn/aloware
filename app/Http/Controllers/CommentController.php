@@ -15,7 +15,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        return CommentResource::collection(Comment::paginate(15));
+        return CommentResource::collection(Comment::firstLevel()->paginate(request()->perPage ?? 15));
     }
 
     /**

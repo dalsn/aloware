@@ -12,11 +12,16 @@ class Comment extends Model
 
     public function comments()
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(Comment::class, 'parent_id')->orderBy('created_at', 'DESC');
     }
 
     public function parentComment()
     {
         return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function scopeFirstLevel($query)
+    {
+        return $query->whereNull('parent_id')->orderBy('created_at', 'DESC');
     }
 }
